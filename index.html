@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Học bảng cửu chương</title>
+  <style>
+    body { font-family: Arial; text-align: center; background: #f0f8ff; }
+    h1 { color: #ff6600; }
+    .question { font-size: 24px; margin: 20px; }
+    input { font-size: 20px; padding: 5px; }
+    button { font-size: 20px; padding: 10px; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <h1>Học bảng cửu chương 🎉</h1>
+  <div class="question" id="question"></div>
+  <input type="number" id="answer" placeholder="Nhập kết quả">
+  <button onclick="checkAnswer()">Kiểm tra</button>
+  <p id="result"></p>
+
+  <script>
+    let a = Math.floor(Math.random() * 10) + 1;
+    let b = Math.floor(Math.random() * 10) + 1;
+    document.getElementById("question").innerText = a + " x " + b + " = ?";
+
+    function checkAnswer() {
+      let ans = document.getElementById("answer").value;
+      if (ans == a * b) {
+        document.getElementById("result").innerText = "Đúng rồi! 🎉";
+      } else {
+        document.getElementById("result").innerText = "Sai mất rồi, thử lại nhé!";
+      }
+    }
+  </script>
+</body>
+</html>
