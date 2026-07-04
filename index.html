@@ -229,6 +229,16 @@
             box-shadow: 0 0 10px rgba(0,246,255,0.35);
             z-index: 5;
         }
+        #track-btn {
+            position: fixed;
+            top: 10px;
+            right: 150px;
+            background: rgba(20,25,45,0.8);
+            color: var(--magenta);
+            border: 1px solid rgba(255,46,230,0.5);
+            box-shadow: 0 0 10px rgba(255,46,230,0.35);
+            z-index: 5;
+        }
 
         #final-score-num {
             font-family: 'Orbitron', sans-serif;
@@ -403,6 +413,7 @@
 <body>
 
     <button id="music-btn" onclick="toggleMusic()">🎵 Nhạc: Tắt</button>
+    <button id="track-btn" onclick="switchTrack()">🔄 Nhạc 1</button>
     <audio id="bg-music" loop>
         <source src="nhac.mp3" type="audio/mpeg">
     </audio>
@@ -410,7 +421,7 @@
     <div id="feedback-overlay"><span class="fx-text" id="fx-text"></span></div>
 
     <div class="container" id="start-screen">
-        <h2>Chọn bảng cửu chương</h2>
+        <h2>HỌC ĐI EM ZAI:)</h2>
         <div class="checkbox-group">
             <script>for(let i=1; i<=10; i++) document.write(`<button onclick="this.classList.toggle('selected')">${i}</button>`);</script>
         </div>
@@ -458,6 +469,8 @@
     let questionQueue = [], answeredCount = 0, currentQuestion = null;
     let currentCorrect, timerInterval, timeLeft;
     let audio = document.getElementById("bg-music"), isMusicPlaying = false;
+    let musicTracks = ['nhac.mp3', 'nhac2.mp3'];
+    let currentTrackIndex = 0;
     let questionStartTime = 0, sessionQuestionTimes = [];
     const HISTORY_KEY = 'mtc_history_v1';
     const HISTORY_MAX = 10;
@@ -472,6 +485,17 @@
                 document.getElementById("music-btn").innerText = "🎵 Nhạc: Bật";
                 isMusicPlaying = true;
             }).catch(() => { /* trình duyệt vẫn chặn, giữ trạng thái tắt */ });
+        }
+    }
+
+    // đổi bài nhạc: chỉ đổi khi bấm nút, đổi xong tự phát loop bài mới
+    // đúng theo trạng thái đang bật/tắt hiện tại
+    function switchTrack() {
+        currentTrackIndex = (currentTrackIndex + 1) % musicTracks.length;
+        audio.src = musicTracks[currentTrackIndex];
+        document.getElementById('track-btn').innerText = `🔄 Nhạc ${currentTrackIndex + 1}`;
+        if (isMusicPlaying) {
+            audio.play().catch(() => { /* trình duyệt chặn, giữ nguyên trạng thái */ });
         }
     }
 
