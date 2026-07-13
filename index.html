@@ -333,6 +333,17 @@
       </div>
       <div>›</div>
     </div>
+
+    <div class="glass navbox" id="nav-notes">
+      <div style="display:flex; align-items:center; gap:12px; min-width:0;">
+        <div class="ic">📝</div>
+        <div style="min-width:0;">
+          <div class="label">Ghi chú</div>
+          <div class="hint">Tạo ghi chú theo ngày</div>
+        </div>
+      </div>
+      <div>›</div>
+    </div>
   </div>
 
   <!-- STATS VIEW -->
@@ -422,6 +433,7 @@
         <button class="btn btn-ghost btn-sm" id="btn-workout-pause">⏸ Tạm dừng</button>
         <button class="btn btn-ghost btn-sm" id="btn-workout-finish">✅ Hoàn thành bài tập</button>
         <button class="btn btn-ghost btn-sm" id="btn-workout-reset">↺ Làm lại</button>
+        <button class="btn btn-ghost btn-sm" id="btn-workout-schedule">📅 Lịch tập</button>
       </div>
     </div>
 
@@ -451,6 +463,78 @@
     <button class="btn btn-ghost btn-sm" id="btn-workout-daydetail-back" style="margin-bottom:16px;">← Bản lưu</button>
     <h2 class="neon-title" style="font-size:1.4rem;" id="workout-day-label"></h2>
     <div id="workout-day-sessions"></div>
+  </div>
+
+  <!-- NOTES LOCK VIEW -->
+  <div class="view" id="view-notes-lock">
+    <button class="btn btn-ghost btn-sm" id="btn-noteslock-back" style="margin-bottom:16px;">← Trang chính</button>
+    <h2 class="neon-title" style="font-size:1.6rem; margin-bottom:16px;">GHI CHÚ</h2>
+
+    <div class="glass glass-pad">
+      <div id="notes-lock-setup" style="display:none;">
+        <div class="sub" style="margin-bottom:10px;">Tạo mật khẩu cho ghi chú</div>
+        <div class="field">
+          <label>Mật khẩu mới</label>
+          <input type="password" id="notes-setup-pass1" placeholder="Tối thiểu 4 ký tự" />
+        </div>
+        <div class="field">
+          <label>Nhập lại mật khẩu</label>
+          <input type="password" id="notes-setup-pass2" placeholder="Nhập lại mật khẩu" />
+        </div>
+        <button class="btn btn-primary btn-block" id="btn-notes-setup-save">Tạo mật khẩu</button>
+        <div class="err" id="notes-setup-error"></div>
+      </div>
+      <div id="notes-lock-unlock" style="display:none;">
+        <div class="sub" style="margin-bottom:10px;">Nhập mật khẩu để xem ghi chú</div>
+        <div class="field">
+          <label>Mật khẩu</label>
+          <input type="password" id="notes-unlock-pass" placeholder="Mật khẩu" />
+        </div>
+        <button class="btn btn-primary btn-block" id="btn-notes-unlock">Mở khoá</button>
+        <div class="err" id="notes-unlock-error"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTES VIEW -->
+  <div class="view" id="view-notes">
+    <div class="topbar">
+      <button class="btn btn-ghost btn-sm" id="btn-notes-back">← Trang chính</button>
+      <button class="btn btn-ghost btn-sm" id="btn-notes-changepass-toggle">🔒 Đổi mật khẩu</button>
+    </div>
+    <h2 class="neon-title" style="font-size:1.6rem; margin-bottom:16px;">GHI CHÚ</h2>
+
+    <div class="glass glass-pad" style="margin-bottom:14px; display:none;" id="notes-changepass-card">
+      <div class="sub" style="margin-bottom:10px;">Đổi mật khẩu ghi chú</div>
+      <div class="field">
+        <label>Mật khẩu cũ</label>
+        <input type="password" id="notes-old-pass" placeholder="Mật khẩu hiện tại" />
+      </div>
+      <div class="field">
+        <label>Mật khẩu mới</label>
+        <input type="password" id="notes-new-pass1" placeholder="Tối thiểu 4 ký tự" />
+      </div>
+      <div class="field">
+        <label>Nhập lại mật khẩu mới</label>
+        <input type="password" id="notes-new-pass2" placeholder="Nhập lại mật khẩu mới" />
+      </div>
+      <button class="btn btn-primary btn-block" id="btn-notes-changepass-save">Đổi mật khẩu</button>
+      <div class="err" id="notes-changepass-error"></div>
+    </div>
+
+    <div class="glass glass-pad" style="margin-bottom:14px;">
+      <div class="field" style="margin-bottom:10px;">
+        <label>Tên ghi chú</label>
+        <input type="text" id="note-title" placeholder="ví dụ: Danh sách cần mua" />
+      </div>
+      <div class="field" style="margin-bottom:10px;">
+        <label>Nội dung ghi chú</label>
+        <textarea id="note-input" rows="3" placeholder="Viết ghi chú của bạn..." style="width:100%; background:rgba(255,255,255,.04); border:1px solid var(--border); color:var(--text); border-radius:12px; padding:12px 14px; font-family:inherit; font-size:1rem; outline:none; resize:vertical;"></textarea>
+      </div>
+      <button class="btn btn-primary btn-block" id="btn-note-save">💾 Lưu ghi chú</button>
+    </div>
+
+    <div id="notes-list-container"></div>
   </div>
 
 </div>
@@ -484,6 +568,7 @@ const db = getFirestore(app);
 
 const WEEKLY_LINK = "https://docs.google.com/spreadsheets/d/17hTu5JoRbfCBwrwpIcFcwR3zuxCXPJArAEdCmls2RJU/edit?gid=266942504#gid=266942504";
 const DETAIL_LINK = "https://docs.google.com/spreadsheets/d/1s9SPQ8Ec1DTNSfDPQsFF5Cl1kIh4xU4q2z0DJWMwjOg/edit?usp=sharing";
+const SCHEDULE_LINK = "https://docs.google.com/spreadsheets/d/1RgCHpeAg7JMzOjm7ZL8OdPu6eM9D1HakeLrGOFC9ivU/edit?usp=sharing";
 
 const PALETTE = ["#3df2e0","#b57bff","#ff4fa3","#ffc15e","#6ee7ff","#ff8a5c","#8effc1","#c58bff"];
 const SVG_NS = "http://www.w3.org/2000/svg";
@@ -506,6 +591,9 @@ let workoutTimerInterval = null;
 let workoutPendingSet = null;
 let workoutSets = [];
 let workoutSavedDocs = [];
+let notesList = [];
+let notesPasswordHash = null;
+let notesUnlocked = false;
 
 // ---------- helpers ----------
 function $(id){ return document.getElementById(id); }
@@ -707,6 +795,9 @@ onAuthStateChanged(auth, async (user) => {
     countdownTarget = null;
     savedList = [];
     resetWorkoutSession();
+    notesList = [];
+    notesPasswordHash = null;
+    notesUnlocked = false;
     showView("view-auth");
   }
 });
@@ -721,6 +812,7 @@ async function loadUserDoc(){
       countdownTarget = data.countdownTarget || null;
       categories = Array.isArray(data.categories) ? data.categories : [];
       chartType = data.chartType || "doughnut";
+      notesPasswordHash = data.notesPasswordHash || null;
     }
   }catch(e){ /* first time user, no doc yet */ }
   renderHomeDate();
@@ -1175,6 +1267,7 @@ $("btn-workout-pause").addEventListener("click", () => {
 $("btn-workout-reset").addEventListener("click", () => {
   resetWorkoutSession();
 });
+$("btn-workout-schedule").addEventListener("click", () => window.open(SCHEDULE_LINK, "_blank"));
 
 $("btn-workout-finish").addEventListener("click", () => {
   if(workoutState === "idle") return;
@@ -1340,6 +1433,220 @@ function openWorkoutDayDetail(dateStr, sessions){
     container.appendChild(card);
   });
 }
+
+// ==================== GHI CHÚ (NOTES) ====================
+async function sha256Hex(str){
+  const enc = new TextEncoder().encode(str);
+  const buf = await crypto.subtle.digest("SHA-256", enc);
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,"0")).join("");
+}
+
+$("nav-notes").addEventListener("click", () => {
+  showView("view-notes-lock");
+  renderNotesLockUI();
+});
+$("btn-noteslock-back").addEventListener("click", () => showView("view-home"));
+$("btn-notes-back").addEventListener("click", () => showView("view-home"));
+
+function renderNotesLockUI(){
+  $("notes-setup-error").textContent = "";
+  $("notes-unlock-error").textContent = "";
+  $("notes-setup-pass1").value = "";
+  $("notes-setup-pass2").value = "";
+  $("notes-unlock-pass").value = "";
+  if(notesPasswordHash){
+    $("notes-lock-setup").style.display = "none";
+    $("notes-lock-unlock").style.display = "block";
+  }else{
+    $("notes-lock-setup").style.display = "block";
+    $("notes-lock-unlock").style.display = "none";
+  }
+}
+
+$("btn-notes-setup-save").addEventListener("click", async () => {
+  const p1 = $("notes-setup-pass1").value;
+  const p2 = $("notes-setup-pass2").value;
+  const err = $("notes-setup-error");
+  err.textContent = "";
+  if(p1.length < 4){ err.textContent = "Mật khẩu cần tối thiểu 4 ký tự."; return; }
+  if(p1 !== p2){ err.textContent = "Mật khẩu nhập lại không khớp."; return; }
+  try{
+    const hash = await sha256Hex(p1);
+    const ref = doc(db, "users", currentUser.uid);
+    await setDoc(ref, { notesPasswordHash: hash }, { merge: true });
+    notesPasswordHash = hash;
+    notesUnlocked = true;
+    showToast("Đã tạo mật khẩu ghi chú");
+    showView("view-notes");
+    await loadNotes();
+  }catch(e){
+    console.error("Notes password setup error:", e);
+    err.textContent = "Có lỗi xảy ra, vui lòng thử lại.";
+  }
+});
+
+$("btn-notes-unlock").addEventListener("click", async () => {
+  const p = $("notes-unlock-pass").value;
+  const err = $("notes-unlock-error");
+  err.textContent = "";
+  if(!p){ err.textContent = "Vui lòng nhập mật khẩu."; return; }
+  const hash = await sha256Hex(p);
+  if(hash === notesPasswordHash){
+    notesUnlocked = true;
+    showView("view-notes");
+    await loadNotes();
+  }else{
+    err.textContent = "Sai mật khẩu.";
+  }
+});
+$("notes-unlock-pass").addEventListener("keydown", (e) => { if(e.key === "Enter") $("btn-notes-unlock").click(); });
+
+$("btn-notes-changepass-toggle").addEventListener("click", () => {
+  const card = $("notes-changepass-card");
+  const open = card.style.display !== "none";
+  card.style.display = open ? "none" : "block";
+  if(!open){
+    $("notes-old-pass").value = "";
+    $("notes-new-pass1").value = "";
+    $("notes-new-pass2").value = "";
+    $("notes-changepass-error").textContent = "";
+  }
+});
+
+$("btn-notes-changepass-save").addEventListener("click", async () => {
+  const oldP = $("notes-old-pass").value;
+  const newP1 = $("notes-new-pass1").value;
+  const newP2 = $("notes-new-pass2").value;
+  const err = $("notes-changepass-error");
+  err.textContent = "";
+  if(!oldP){ err.textContent = "Vui lòng nhập mật khẩu cũ."; return; }
+  const oldHash = await sha256Hex(oldP);
+  if(oldHash !== notesPasswordHash){ err.textContent = "Mật khẩu cũ không đúng."; return; }
+  if(newP1.length < 4){ err.textContent = "Mật khẩu mới cần tối thiểu 4 ký tự."; return; }
+  if(newP1 !== newP2){ err.textContent = "Mật khẩu mới nhập lại không khớp."; return; }
+  try{
+    const newHash = await sha256Hex(newP1);
+    const ref = doc(db, "users", currentUser.uid);
+    await setDoc(ref, { notesPasswordHash: newHash }, { merge: true });
+    notesPasswordHash = newHash;
+    showToast("Đã đổi mật khẩu");
+    $("notes-changepass-card").style.display = "none";
+  }catch(e){
+    console.error("Notes change password error:", e);
+    err.textContent = "Có lỗi xảy ra, vui lòng thử lại.";
+  }
+});
+
+async function loadNotes(){
+  const container = $("notes-list-container");
+  container.innerHTML = '<div class="spinner"></div>';
+  try{
+    const coll = collection(db, "users", currentUser.uid, "notes");
+    const q = query(coll, orderBy("createdAt", "desc"));
+    const snaps = await getDocs(q);
+    notesList = [];
+    snaps.forEach(d => notesList.push({ id: d.id, ...d.data() }));
+  }catch(e){
+    console.error("Notes load error:", e);
+    notesList = [];
+  }
+  renderNotesList();
+}
+
+function renderNotesList(){
+  const container = $("notes-list-container");
+  container.innerHTML = "";
+  if(notesList.length === 0){
+    const empty = document.createElement("div");
+    empty.className = "glass empty";
+    empty.textContent = "Chưa có ghi chú nào";
+    container.appendChild(empty);
+    return;
+  }
+  notesList.forEach(n => {
+    const card = document.createElement("div");
+    card.className = "glass";
+    card.style.marginBottom = "12px";
+    card.style.overflow = "hidden";
+
+    const header = document.createElement("div");
+    header.style.display = "flex";
+    header.style.justifyContent = "space-between";
+    header.style.alignItems = "center";
+    header.style.gap = "10px";
+    header.style.padding = "14px 16px";
+    header.style.cursor = "pointer";
+    header.innerHTML = `
+      <div style="min-width:0; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:700;">${n.title || "(Không có tên)"}</div>
+      <button class="btn btn-ghost btn-sm notes-detail-toggle" type="button">Chi tiết ▾</button>
+      <div class="mono sub" style="text-transform:none; flex-shrink:0;">${n.date||""} · ${n.time||""}</div>
+    `;
+
+    const body = document.createElement("div");
+    body.style.display = "none";
+    body.style.padding = "0 16px 16px";
+
+    const content = document.createElement("div");
+    content.style.whiteSpace = "pre-wrap";
+    content.style.wordBreak = "break-word";
+    content.style.fontSize = ".92rem";
+    content.style.borderTop = "1px solid rgba(255,255,255,.06)";
+    content.style.paddingTop = "10px";
+    content.textContent = n.content;
+
+    const del = document.createElement("button");
+    del.className = "btn btn-danger btn-sm";
+    del.textContent = "🗑 Xoá ghi chú";
+    del.style.marginTop = "12px";
+    del.addEventListener("click", async () => {
+      try{
+        await deleteDoc(doc(db, "users", currentUser.uid, "notes", n.id));
+        notesList = notesList.filter(x => x.id !== n.id);
+        renderNotesList();
+      }catch(e){ console.error("Note delete error:", e); }
+    });
+
+    body.appendChild(content);
+    body.appendChild(del);
+
+    const toggleBtn = header.querySelector(".notes-detail-toggle");
+    function toggle(){
+      const open = body.style.display !== "none";
+      body.style.display = open ? "none" : "block";
+      toggleBtn.textContent = open ? "Chi tiết ▾" : "Thu gọn ▴";
+    }
+    header.addEventListener("click", toggle);
+
+    card.appendChild(header);
+    card.appendChild(body);
+    container.appendChild(card);
+  });
+}
+
+$("btn-note-save").addEventListener("click", async () => {
+  const title = $("note-title").value.trim();
+  const content = $("note-input").value.trim();
+  if(!title || !content || !currentUser) return;
+  const now = new Date();
+  const note = {
+    title,
+    content,
+    date: fmtDateVN(now),
+    time: now.toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"}),
+    createdAt: now.getTime(),
+  };
+  try{
+    const coll = collection(db, "users", currentUser.uid, "notes");
+    await addDoc(coll, note);
+    $("note-title").value = "";
+    $("note-input").value = "";
+    showToast("Đã lưu ghi chú");
+    await loadNotes();
+  }catch(e){
+    console.error("Note save error:", e);
+    showToast("Lưu thất bại: " + (e.code || e.message || "không rõ lỗi"));
+  }
+});
 </script>
 </body>
 </html>
